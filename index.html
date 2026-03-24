@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NTU 2026 Spring 2 DRL HW3-2 LeaderBoard</title>
+  <style>
+    /* ─── Reset & base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f1a;
+      --surface:   #151929;
+      --surface2:  #1e2438;
+      --border:    #2a3050;
+      --accent:    #4f8ef7;
+      --accent2:   #7c5af7;
+      --gold:      #f5c842;
+      --silver:    #b0bec5;
+      --bronze:    #cd7f32;
+      --green:     #4caf82;
+      --red:       #e05c5c;
+      --muted:     #6b7694;
+      --text:      #dde3f5;
+      --text-dim:  #8993b5;
+      --radius:    10px;
+      --row-hover: #1d2540;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ─── Header ────────────────────────────────────────────────── */
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .course-tag {
+      display: inline-block;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(79, 142, 247, .12);
+      border: 1px solid rgba(79, 142, 247, .3);
+      border-radius: 99px;
+      padding: .25rem .8rem;
+      margin-bottom: .9rem;
+    }
+
+    h1 {
+      font-size: clamp(1.3rem, 4vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      margin-top: .4rem;
+      color: var(--text-dim);
+      font-size: .82rem;
+    }
+
+    /* ─── Stats bar ─────────────────────────────────────────────── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.8rem;
+    }
+
+    .stat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: .35rem 1rem;
+      font-size: .8rem;
+      color: var(--text-dim);
+    }
+
+    .stat-pill strong { color: var(--text); }
+
+    /* ─── Legend ────────────────────────────────────────────────── */
+    .legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: .6rem 1.4rem;
+      margin-bottom: 1.6rem;
+      font-size: .75rem;
+      color: var(--text-dim);
+    }
+
+    .legend-item { display: flex; align-items: center; gap: .4rem; }
+
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ─── Score formula card ─────────────────────────────────────── */
+    .formula-card {
+      max-width: 760px;
+      margin: 0 auto 1.8rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .9rem 1.2rem;
+      font-size: .78rem;
+      color: var(--text-dim);
+      line-height: 1.9;
+    }
+
+    .formula-card strong { color: var(--text); }
+
+    .formula-card code {
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      color: var(--accent);
+      font-size: .77rem;
+    }
+
+    /* ─── Table wrapper ─────────────────────────────────────────── */
+    .table-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+
+    thead th {
+      background: var(--surface2);
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: .72rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .7rem .9rem;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+      user-select: none;
+      cursor: pointer;
+    }
+
+    thead th:hover { color: var(--text); }
+
+    thead th .sort-icon {
+      margin-left: .3rem;
+      opacity: .4;
+      font-size: .7rem;
+    }
+
+    thead th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--row-hover); }
+
+    td {
+      padding: .65rem .9rem;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    /* ─── Rank cell ─────────────────────────────────────────────── */
+    .rank-cell {
+      text-align: center;
+      font-weight: 700;
+      font-size: .9rem;
+      min-width: 2.2rem;
+      display: inline-block;
+    }
+
+    .rank-1 { color: var(--gold); }
+    .rank-2 { color: var(--silver); }
+    .rank-3 { color: var(--bronze); }
+
+    /* ─── Student ID ────────────────────────────────────────────── */
+    .student-id {
+      font-weight: 600;
+      font-size: .85rem;
+    }
+
+    /* ─── Time cell ─────────────────────────────────────────────── */
+    .time-cell { color: var(--text-dim); font-size: .78rem; }
+
+    /* ─── Score cell ─────────────────────────────────────────────── */
+    .total-score {
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--accent);
+    }
+
+    /* ─── Level cell ────────────────────────────────────────────── */
+    .level-cell {
+      text-align: center;
+      position: relative;
+    }
+
+    .kill-count {
+      font-weight: 600;
+      font-size: .85rem;
+    }
+
+    .kill-count.passed  { color: var(--green); }
+    .kill-count.failed  { color: var(--red); }
+    .kill-count.no-data { color: var(--muted); }
+    .kill-count.final   { color: var(--accent); }
+
+    .threshold-badge {
+      display: inline-block;
+      font-size: .6rem;
+      background: rgba(76, 175, 130, .15);
+      color: var(--green);
+      border: 1px solid rgba(76, 175, 130, .3);
+      border-radius: 99px;
+      padding: .05rem .35rem;
+      margin-left: .3rem;
+      vertical-align: middle;
+    }
+
+    .threshold-badge.fail {
+      background: rgba(224, 92, 92, .12);
+      color: var(--red);
+      border-color: rgba(224, 92, 92, .3);
+    }
+
+    /* ─── Tooltip ───────────────────────────────────────────────── */
+    .tooltip-anchor {
+      position: relative;
+      display: inline-block;
+      cursor: default;
+    }
+
+    .tooltip {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0a0c17;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .65rem .85rem;
+      min-width: 170px;
+      font-size: .76rem;
+      line-height: 1.75;
+      z-index: 100;
+      text-align: left;
+      white-space: normal;
+      box-shadow: 0 8px 32px rgba(0,0,0,.55);
+      transition: opacity .15s, visibility .15s;
+    }
+
+    .tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--border);
+    }
+
+    .tooltip-anchor:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltip-title {
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .3rem;
+      font-size: .78rem;
+    }
+
+    .tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      gap: .8rem;
+    }
+
+    .tooltip-label { color: var(--text-dim); }
+    .tooltip-val   { color: var(--text); font-weight: 600; }
+
+    /* ─── Level header info tooltip ─────────────────────────────── */
+    .th-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      position: relative;
+    }
+
+    .th-inner .tooltip {
+      min-width: 210px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .th-inner:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .info-icon {
+      color: var(--muted);
+      font-size: .6rem;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      width: 13px; height: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-style: normal;
+    }
+
+    /* ─── Loading / empty ───────────────────────────────────────── */
+    .state-msg {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-right: .5rem;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Toolbar ───────────────────────────────────────────────── */
+    .toolbar {
+      max-width: 1100px;
+      margin: 0 auto 1rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: .8rem;
+    }
+
+    .btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: .4rem .9rem;
+      border-radius: 6px;
+      font-size: .78rem;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+
+    .btn:hover { border-color: var(--accent); color: var(--text); }
+
+    .last-updated { font-size: .74rem; color: var(--muted); }
+
+    @media (max-width: 640px) {
+      h1  { font-size: 1.1rem; }
+      td, th { padding: .5rem .55rem; font-size: .74rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="course-tag">NTU &middot; 2026 Spring &middot; Deep Reinforcement Learning</div>
+  <h1>NTU 2026 Spring 2 DRL HW3-2 LeaderBoard</h1>
+  <p class="subtitle">Sorted by total weighted score &mdash; hover level cells for details</p>
+</header>
+
+<div class="stats-bar">
+  <div class="stat-pill">Participants: <strong id="statCount">—</strong></div>
+  <div class="stat-pill">Levels: <strong>5</strong></div>
+  <div class="stat-pill">Sort: <strong id="statSort">Total Score ↓</strong></div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="dot" style="background:var(--green)"></div>Passed threshold</div>
+  <div class="legend-item"><div class="dot" style="background:var(--red)"></div>Below threshold</div>
+  <div class="legend-item"><div class="dot" style="background:var(--accent)"></div>Final level (no threshold)</div>
+  <div class="legend-item"><div class="dot" style="background:var(--muted)"></div>Not attempted / blocked</div>
+</div>
+
+<div class="formula-card">
+  <strong>Score formula:</strong>&ensp;
+  <code>Total = &Sigma;(kills&nbsp;&times;&nbsp;w) + &Sigma;(health&nbsp;&times;&nbsp;0.05) + &Sigma;(ammo&nbsp;&times;&nbsp;0.01)</code><br>
+  Weights: <code>L0 &times;1.0</code>&ensp;<code>L1 &times;1.5</code>&ensp;<code>L2 &times;2.0</code>&ensp;<code>L3 &times;2.5</code>&ensp;<code>L4 &times;3.0</code><br>
+  Progression: a level is only attempted if the previous level's kill count meets its threshold.
+</div>
+
+<div class="toolbar">
+  <span class="last-updated" id="lastUpdated"></span>
+  <button class="btn" onclick="init()">&#8635; Refresh</button>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead id="thead"></thead>
+    <tbody id="tbody">
+      <tr><td colspan="20" class="state-msg"><span class="spinner"></span>Loading…</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+/* ── Static config ─────────────────────────────────────────────── */
+const LEVELS = [
+  { name: "SeekAndSlayLevel0-v0",  map: "default",                    threshold: 22,   weight: 1.0 },
+  { name: "SeekAndSlayLevel1_6-v0",map: "mixed_enemies",              threshold: 15,   weight: 1.5 },
+  { name: "SeekAndSlayLevel2_1-v0",map: "blue_shadows",               threshold: 9,    weight: 2.0 },
+  { name: "SeekAndSlayLevel3_1-v0",map: "blue_mixed_resized_enemies", threshold: 7,    weight: 2.5 },
+  { name: "SeekAndSlayLevel4-v0",  map: "complete",                   threshold: null, weight: 3.0 },
+];
+
+// Short display labels: L0, L1.6, L2.1, L3.1, L4
+function shortLabel(name) {
+  const m = name.match(/Level(\d+)(?:_(\d+))?/i);
+  if (!m) return name;
+  return m[2] ? `L${m[1]}.${m[2]}` : `L${m[1]}`;
+}
+
+function computeScore(levels) {
+  let s = 0;
+  for (const lvl of LEVELS) {
+    const e = levels?.[lvl.name];
+    if (!e) continue;
+    s += (e.kills  ?? 0) * lvl.weight;
+    s += (e.health ?? 0) * 0.05;
+    s += (e.ammo   ?? 0) * 0.01;
+  }
+  return Math.round(s * 100) / 100;
+}
+
+/* ── State ─────────────────────────────────────────────────────── */
+let DATA    = [];
+let sortKey = "total_score";
+let sortAsc = false;
+
+/* ── Data loading ──────────────────────────────────────────────── */
+async function loadData() {
+  const r = await fetch("leaderboard.json?_=" + Date.now());
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+async function init() {
+  try {
+    const raw = await loadData();
+    DATA = raw.map(e => ({ ...e, total_score: computeScore(e.levels) }));
+    document.getElementById("statCount").textContent = DATA.length;
+    document.getElementById("lastUpdated").textContent =
+      "Updated: " + new Date().toLocaleTimeString();
+    render();
+  } catch (e) {
+    document.getElementById("tbody").innerHTML =
+      `<tr><td colspan="20" class="state-msg">⚠ Failed to load data: ${esc(e.message)}</td></tr>`;
+  }
+}
+
+/* ── Header ────────────────────────────────────────────────────── */
+const COL_DEFS = [
+  { key: "rank",            label: "#",            sortable: false },
+  { key: "student_id",      label: "Student ID",   sortable: true  },
+  { key: "submission_time", label: "Submitted",    sortable: true  },
+  { key: "total_score",     label: "Total Score",  sortable: true  },
+  ...LEVELS.map(l => ({ key: "lvl__" + l.name, label: shortLabel(l.name), sortable: true, level: l })),
+];
+
+function buildHeader() {
+  const tr = document.createElement("tr");
+  COL_DEFS.forEach(col => {
+    const th = document.createElement("th");
+    const isSorted = col.key === sortKey;
+    const icon = col.sortable
+      ? `<span class="sort-icon">${isSorted ? (sortAsc ? "↑" : "↓") : "↕"}</span>`
+      : "";
+
+    if (col.level) {
+      const l = col.level;
+      const thrLine = l.threshold != null
+        ? `<div class="tooltip-row"><span class="tooltip-label">Threshold</span><span class="tooltip-val">${l.threshold} kills</span></div>`
+        : `<div class="tooltip-row"><span class="tooltip-label">Threshold</span><span class="tooltip-val">none (final)</span></div>`;
+      th.innerHTML = `
+        <div class="th-inner">
+          ${col.label}
+          <i class="info-icon">i
+            <span class="tooltip">
+              <div class="tooltip-title">${esc(l.name)}</div>
+              <div class="tooltip-row"><span class="tooltip-label">Map</span><span class="tooltip-val">${esc(l.map)}</span></div>
+              ${thrLine}
+              <div class="tooltip-row"><span class="tooltip-label">Weight</span><span class="tooltip-val">&times;${l.weight}</span></div>
+            </span>
+          </i>
+          ${icon}
+        </div>`;
+    } else {
+      th.innerHTML = col.label + icon;
+    }
+
+    if (isSorted) th.classList.add("sorted");
+    if (col.sortable) {
+      th.addEventListener("click", () => {
+        if (sortKey === col.key) { sortAsc = !sortAsc; }
+        else { sortKey = col.key; sortAsc = col.key === "student_id" || col.key === "submission_time"; }
+        document.getElementById("statSort").textContent =
+          col.label + (sortAsc ? " ↑" : " ↓");
+        render();
+      });
+    }
+    tr.appendChild(th);
+  });
+  document.getElementById("thead").replaceChildren(tr);
+}
+
+/* ── Sorting ────────────────────────────────────────────────────── */
+function getVal(e, key) {
+  if (key === "total_score")     return e.total_score ?? 0;
+  if (key === "student_id")      return e.student_id  ?? "";
+  if (key === "submission_time") return e.submission_time ?? "";
+  if (key.startsWith("lvl__"))   return e.levels?.[key.slice(5)]?.kills ?? -1;
+  return 0;
+}
+
+function sorted() {
+  return [...DATA].sort((a, b) => {
+    const va = getVal(a, sortKey), vb = getVal(b, sortKey);
+    if (typeof va === "string") return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return sortAsc ? va - vb : vb - va;
+  });
+}
+
+/* ── Render ─────────────────────────────────────────────────────── */
+function render() {
+  buildHeader();
+  const tbody = document.getElementById("tbody");
+
+  if (DATA.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="20" class="state-msg">No submissions yet.</td></tr>`;
+    return;
+  }
+
+  // Rank by total_score (independent of current sort)
+  const byScore = [...DATA].sort((a, b) => (b.total_score ?? 0) - (a.total_score ?? 0));
+  const rankMap = Object.fromEntries(byScore.map((e, i) => [e.student_id, i + 1]));
+
+  const rows = sorted().map(entry => {
+    const rank = rankMap[entry.student_id];
+    const rankClass = rank <= 3 ? `rank-${rank}` : "";
+    const rankStr   = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : rank;
+
+    const tRaw = entry.submission_time ? new Date(entry.submission_time) : null;
+    const timeStr = tRaw
+      ? tRaw.toLocaleDateString() + " " + tRaw.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})
+      : "—";
+
+    const levelCells = LEVELS.map(lvl => {
+      const ld = entry.levels?.[lvl.name];
+      if (!ld) return `<td class="level-cell"><span class="kill-count no-data">—</span></td>`;
+
+      const kills  = ld.kills  ?? 0;
+      const health = ld.health ?? 0;
+      const ammo   = ld.ammo   ?? 0;
+      const contrib = Math.round((kills * lvl.weight + health * 0.05 + ammo * 0.01) * 100) / 100;
+
+      let klass = "final", badge = "";
+      if (lvl.threshold != null) {
+        if (kills >= lvl.threshold) {
+          klass = "passed";
+          badge = `<span class="threshold-badge">&#10003; ${lvl.threshold}</span>`;
+        } else {
+          klass = "failed";
+          badge = `<span class="threshold-badge fail">&#10007; ${lvl.threshold}</span>`;
+        }
+      }
+
+      return `
+        <td class="level-cell">
+          <span class="tooltip-anchor">
+            <span class="kill-count ${klass}">${kills}</span>${badge}
+            <span class="tooltip">
+              <div class="tooltip-title">${esc(shortLabel(lvl.name))}</div>
+              <div class="tooltip-row"><span class="tooltip-label">Kills</span><span class="tooltip-val">${kills}</span></div>
+              <div class="tooltip-row"><span class="tooltip-label">Health</span><span class="tooltip-val">${health}</span></div>
+              <div class="tooltip-row"><span class="tooltip-label">Ammo</span><span class="tooltip-val">${ammo}</span></div>
+              <div class="tooltip-row"><span class="tooltip-label">Score contrib.</span><span class="tooltip-val">+${contrib}</span></div>
+            </span>
+          </span>
+        </td>`;
+    }).join("");
+
+    return `
+      <tr>
+        <td><span class="rank-cell ${rankClass}">${rankStr}</span></td>
+        <td><span class="student-id">${esc(entry.student_id)}</span></td>
+        <td><span class="time-cell">${timeStr}</span></td>
+        <td><span class="total-score">${(entry.total_score ?? 0).toFixed(2)}</span></td>
+        ${levelCells}
+      </tr>`;
+  });
+
+  tbody.innerHTML = rows.join("");
+}
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+}
+
+/* ── Boot ───────────────────────────────────────────────────────── */
+init();
+setInterval(init, 60_000);   // auto-refresh every minute
+</script>
+</body>
+</html>
