@@ -22,6 +22,10 @@ on:
         description: "Set to 'true' to delete the student's entry"
         required: false
         default: "false"
+      run_url:
+        description: "Judge workflow run URL for audit (e.g. https://github.com/org/repo/actions/runs/123)"
+        required: false
+        default: ""
 
 jobs:
   update:
@@ -46,7 +50,7 @@ jobs:
             echo "student_id=${{ inputs.student_id }}" >> $GITHUB_OUTPUT
             echo '${{ inputs.results_json }}' > /tmp/results.json
             echo "delete=${{ inputs.delete }}" >> $GITHUB_OUTPUT
-            echo "run_url=" >> $GITHUB_OUTPUT
+            echo "run_url=${{ inputs.run_url }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Set up Python
