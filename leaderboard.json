@@ -1,13 +1,18 @@
 [
   {
     "student_id": "dummy",
-    "submission_time": "2026-03-24T10:29:05.490257+00:00",
+    "submission_time": "2026-03-24T10:55:50.635726+00:00",
     "levels": {
       "SeekAndSlayLevel0-v0": {
-        "ammo": 73.8,
+        "ammo": 73.6,
         "health": 100,
-        "kills": 2.2
+        "kills": 2
       }
+    },
+    "audit": {
+      "run_url": "https://github.com/ntu-rl-2026-spring2-hw3/hw3-2-leaderboard/actions/runs/23485859343",
+      "triggered_by": "torrid-fish",
+      "event_type": "repository_dispatch"
     }
   }
 ]
