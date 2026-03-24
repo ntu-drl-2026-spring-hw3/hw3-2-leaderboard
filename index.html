@@ -146,6 +146,25 @@
       font-size: .82rem;
     }
 
+    /* Sticky rank + student-id columns */
+    th.col-rank, td.col-rank {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--surface2);
+    }
+    tbody td.col-rank { background: var(--bg); }
+    tbody tr:hover td.col-rank { background: var(--row-hover); }
+
+    th.col-sid, td.col-sid {
+      position: sticky;
+      left: 44px;   /* width of rank col */
+      z-index: 2;
+      background: var(--surface2);
+    }
+    tbody td.col-sid { background: var(--bg); }
+    tbody tr:hover td.col-sid { background: var(--row-hover); }
+
     thead th {
       background: var(--surface2);
       color: var(--text-dim);
@@ -247,21 +266,15 @@
       border-color: rgba(224, 92, 92, .3);
     }
 
-    /* ─── Tooltip ───────────────────────────────────────────────── */
+    /* ─── Tooltip (JS-positioned, fixed) ───────────────────────── */
     .tooltip-anchor {
-      position: relative;
       display: inline-block;
       cursor: default;
     }
 
-    .tooltip {
-      visibility: hidden;
-      opacity: 0;
-      pointer-events: none;
-      position: absolute;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
+    #ftip {
+      position: fixed;
+      z-index: 9999;
       background: #0a0c17;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -269,14 +282,17 @@
       min-width: 170px;
       font-size: .76rem;
       line-height: 1.75;
-      z-index: 100;
       text-align: left;
       white-space: normal;
-      box-shadow: 0 8px 32px rgba(0,0,0,.55);
-      transition: opacity .15s, visibility .15s;
+      box-shadow: 0 8px 32px rgba(0,0,0,.6);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .12s;
     }
 
-    .tooltip::after {
+    #ftip.visible { opacity: 1; }
+
+    #ftip::after {
       content: '';
       position: absolute;
       top: 100%;
@@ -284,11 +300,6 @@
       transform: translateX(-50%);
       border: 6px solid transparent;
       border-top-color: var(--border);
-    }
-
-    .tooltip-anchor:hover .tooltip {
-      visibility: visible;
-      opacity: 1;
     }
 
     .tooltip-title {
@@ -307,23 +318,11 @@
     .tooltip-label { color: var(--text-dim); }
     .tooltip-val   { color: var(--text); font-weight: 600; }
 
-    /* ─── Level header info tooltip ─────────────────────────────── */
+    /* ─── Level header info icon ─────────────────────────────────── */
     .th-inner {
       display: inline-flex;
       align-items: center;
       gap: .3rem;
-      position: relative;
-    }
-
-    .th-inner .tooltip {
-      min-width: 210px;
-      text-transform: none;
-      letter-spacing: 0;
-    }
-
-    .th-inner:hover .tooltip {
-      visibility: visible;
-      opacity: 1;
     }
 
     .info-icon {
@@ -337,6 +336,7 @@
       justify-content: center;
       flex-shrink: 0;
       font-style: normal;
+      cursor: default;
     }
 
     /* ─── Loading / empty ───────────────────────────────────────── */
@@ -399,7 +399,21 @@
   <p class="subtitle">Sorted by total weighted score &mdash; hover level cells for details</p>
 </header>
 
-<div class="stats-bar">
+<div class="toolbar">
+  <span class="last-updated" id="lastUpdated"></span>
+  <button class="btn" onclick="init()">&#8635; Refresh</button>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead id="thead"></thead>
+    <tbody id="tbody">
+      <tr><td colspan="20" class="state-msg"><span class="spinner"></span>Loading…</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="stats-bar" style="margin-top:1.8rem">
   <div class="stat-pill">Participants: <strong id="statCount">—</strong></div>
   <div class="stat-pill">Levels: <strong>5</strong></div>
   <div class="stat-pill">Sort: <strong id="statSort">Total Score ↓</strong></div>
@@ -417,20 +431,6 @@
   <code>Total = &Sigma;(kills&nbsp;&times;&nbsp;w) + &Sigma;(health&nbsp;&times;&nbsp;0.05) + &Sigma;(ammo&nbsp;&times;&nbsp;0.01)</code><br>
   Weights: <code>L0 &times;1.0</code>&ensp;<code>L1 &times;1.5</code>&ensp;<code>L2 &times;2.0</code>&ensp;<code>L3 &times;2.5</code>&ensp;<code>L4 &times;3.0</code><br>
   Progression: a level is only attempted if the previous level's kill count meets its threshold.
-</div>
-
-<div class="toolbar">
-  <span class="last-updated" id="lastUpdated"></span>
-  <button class="btn" onclick="init()">&#8635; Refresh</button>
-</div>
-
-<div class="table-wrap">
-  <table>
-    <thead id="thead"></thead>
-    <tbody id="tbody">
-      <tr><td colspan="20" class="state-msg"><span class="spinner"></span>Loading…</td></tr>
-    </tbody>
-  </table>
 </div>
 
 <script>
@@ -508,26 +508,25 @@ function buildHeader() {
 
     if (col.level) {
       const l = col.level;
-      const thrLine = l.threshold != null
-        ? `<div class="tooltip-row"><span class="tooltip-label">Threshold</span><span class="tooltip-val">${l.threshold} kills</span></div>`
-        : `<div class="tooltip-row"><span class="tooltip-label">Threshold</span><span class="tooltip-val">none (final)</span></div>`;
+      const thrVal = l.threshold != null ? `${l.threshold} kills` : "none (final)";
+      const tipHtml = [
+        `<div class="tooltip-title">${esc(l.name)}</div>`,
+        `<div class="tooltip-row"><span class="tooltip-label">Map</span><span class="tooltip-val">${esc(l.map)}</span></div>`,
+        `<div class="tooltip-row"><span class="tooltip-label">Threshold</span><span class="tooltip-val">${thrVal}</span></div>`,
+        `<div class="tooltip-row"><span class="tooltip-label">Weight</span><span class="tooltip-val">&times;${l.weight}</span></div>`,
+      ].join("");
       th.innerHTML = `
         <div class="th-inner">
           ${col.label}
-          <i class="info-icon">i
-            <span class="tooltip">
-              <div class="tooltip-title">${esc(l.name)}</div>
-              <div class="tooltip-row"><span class="tooltip-label">Map</span><span class="tooltip-val">${esc(l.map)}</span></div>
-              ${thrLine}
-              <div class="tooltip-row"><span class="tooltip-label">Weight</span><span class="tooltip-val">&times;${l.weight}</span></div>
-            </span>
-          </i>
+          <i class="info-icon tooltip-anchor" data-tip="${tipHtml.replace(/"/g,"&quot;")}">i</i>
           ${icon}
         </div>`;
     } else {
       th.innerHTML = col.label + icon;
     }
 
+    if (col.key === "rank")       th.classList.add("col-rank");
+    if (col.key === "student_id") th.classList.add("col-sid");
     if (isSorted) th.classList.add("sorted");
     if (col.sortable) {
       th.addEventListener("click", () => {
@@ -604,25 +603,26 @@ function render() {
         }
       }
 
+      const tipHtml = [
+        `<div class="tooltip-title">${esc(shortLabel(lvl.name))}</div>`,
+        `<div class="tooltip-row"><span class="tooltip-label">Kills</span><span class="tooltip-val">${kills}</span></div>`,
+        `<div class="tooltip-row"><span class="tooltip-label">Health</span><span class="tooltip-val">${health}</span></div>`,
+        `<div class="tooltip-row"><span class="tooltip-label">Ammo</span><span class="tooltip-val">${ammo}</span></div>`,
+        `<div class="tooltip-row"><span class="tooltip-label">Score contrib.</span><span class="tooltip-val">+${contrib}</span></div>`,
+      ].join("").replace(/"/g, "&quot;");
+
       return `
         <td class="level-cell">
-          <span class="tooltip-anchor">
+          <span class="tooltip-anchor" data-tip="${tipHtml}">
             <span class="kill-count ${klass}">${kills}</span>${badge}
-            <span class="tooltip">
-              <div class="tooltip-title">${esc(shortLabel(lvl.name))}</div>
-              <div class="tooltip-row"><span class="tooltip-label">Kills</span><span class="tooltip-val">${kills}</span></div>
-              <div class="tooltip-row"><span class="tooltip-label">Health</span><span class="tooltip-val">${health}</span></div>
-              <div class="tooltip-row"><span class="tooltip-label">Ammo</span><span class="tooltip-val">${ammo}</span></div>
-              <div class="tooltip-row"><span class="tooltip-label">Score contrib.</span><span class="tooltip-val">+${contrib}</span></div>
-            </span>
           </span>
         </td>`;
     }).join("");
 
     return `
       <tr>
-        <td><span class="rank-cell ${rankClass}">${rankStr}</span></td>
-        <td><span class="student-id">${esc(entry.student_id)}</span></td>
+        <td class="col-rank"><span class="rank-cell ${rankClass}">${rankStr}</span></td>
+        <td class="col-sid"><span class="student-id">${esc(entry.student_id)}</span></td>
         <td><span class="time-cell">${timeStr}</span></td>
         <td><span class="total-score">${(entry.total_score ?? 0).toFixed(2)}</span></td>
         ${levelCells}
@@ -637,6 +637,50 @@ function esc(s) {
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;");
+}
+
+/* ── Floating tooltip ──────────────────────────────────────────── */
+const ftip = document.createElement("div");
+ftip.id = "ftip";
+document.body.appendChild(ftip);
+
+document.addEventListener("mouseover", e => {
+  const anchor = e.target.closest(".tooltip-anchor");
+  if (!anchor) return;
+  const html = anchor.dataset.tip;
+  if (!html) return;
+  ftip.innerHTML = html;
+  ftip.classList.add("visible");
+  positionTip(anchor);
+});
+
+document.addEventListener("mouseout", e => {
+  if (!e.target.closest(".tooltip-anchor")) return;
+  ftip.classList.remove("visible");
+});
+
+document.addEventListener("scroll", () => ftip.classList.remove("visible"), true);
+
+function positionTip(anchor) {
+  const r = anchor.getBoundingClientRect();
+  // Temporarily show to measure size
+  ftip.style.left = "0";
+  ftip.style.top  = "0";
+  const tw = ftip.offsetWidth;
+  const th = ftip.offsetHeight;
+
+  let left = r.left + r.width / 2 - tw / 2;
+  let top  = r.top - th - 10;
+
+  // Clamp horizontally
+  const margin = 8;
+  left = Math.max(margin, Math.min(left, window.innerWidth - tw - margin));
+
+  // Flip below if not enough room above
+  if (top < margin) top = r.bottom + 10;
+
+  ftip.style.left = left + "px";
+  ftip.style.top  = top  + "px";
 }
 
 /* ── Boot ───────────────────────────────────────────────────────── */
