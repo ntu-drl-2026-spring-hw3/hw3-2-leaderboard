@@ -32,6 +32,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ── Verify secret (repository_dispatch only) ──────────────────
+      # workflow_dispatch is manual/TA use, skip verification
+      - name: Verify submit secret
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          if [ "${{ github.event.client_payload.secret }}" != "${{ secrets.SUBMIT_SECRET }}" ]; then
+            echo "Unauthorized: invalid SUBMIT_SECRET"
+            exit 1
+          fi
+
       # ── Resolve inputs (repository_dispatch or workflow_dispatch) ──
       - name: Set variables
         id: vars
