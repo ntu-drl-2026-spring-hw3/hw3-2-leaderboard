@@ -45,7 +45,7 @@ jobs:
             # results_json may contain special chars — write to file instead
             echo '${{ toJson(github.event.client_payload.results) }}' > /tmp/results.json
             echo "delete=${{ github.event.client_payload.delete || 'false' }}" >> $GITHUB_OUTPUT
-            echo "run_url=${{ github.event.client_payload.run_url }}" >> $GITHUB_OUTPUT
+            echo "run_url=${{ github.event.client_payload.audit.run_url }}" >> $GITHUB_OUTPUT
           else
             echo "student_id=${{ inputs.student_id }}" >> $GITHUB_OUTPUT
             echo '${{ inputs.results_json }}' > /tmp/results.json
