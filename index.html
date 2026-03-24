@@ -27,6 +27,24 @@
       --row-hover: #1d2540;
     }
 
+    html[data-theme="light"] {
+      --bg:        #f0f2f8;
+      --surface:   #ffffff;
+      --surface2:  #e4e8f5;
+      --border:    #ccd1e8;
+      --accent:    #3b7de8;
+      --accent2:   #6340e0;
+      --gold:      #c8960a;
+      --silver:    #607d8b;
+      --bronze:    #8b5a2b;
+      --green:     #2a9960;
+      --red:       #c0392b;
+      --muted:     #8890aa;
+      --text:      #1a1f36;
+      --text-dim:  #505878;
+      --row-hover: #e4e8f5;
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
@@ -295,6 +313,31 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
 
+    /* ─── Theme toggle button ────────────────────────────────────── */
+    #themeToggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1000;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+
+    #themeToggle:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
     @media (max-width: 640px) {
       h1  { font-size: 1.1rem; }
       td, th { padding: .5rem .55rem; font-size: .74rem; }
@@ -302,6 +345,8 @@
   </style>
 </head>
 <body>
+
+<button id="themeToggle" title="Toggle light/dark mode">🌙</button>
 
 <header>
 <h1>NTU 2026 Spring 2 DRL HW3-2 LeaderBoard</h1>
@@ -572,6 +617,25 @@ function positionTip(anchor) {
   ftip.style.left = left + "px";
   ftip.style.top  = top  + "px";
 }
+
+/* ── Theme toggle ───────────────────────────────────────────────── */
+const toggleBtn = document.getElementById("themeToggle");
+
+function applyTheme(light) {
+  document.documentElement.dataset.theme = light ? "light" : "dark";
+  toggleBtn.textContent = light ? "☀️" : "🌙";
+}
+
+toggleBtn.addEventListener("click", () => {
+  const isLight = document.documentElement.dataset.theme === "light";
+  localStorage.setItem("theme", isLight ? "dark" : "light");
+  applyTheme(!isLight);
+});
+
+// Init theme from localStorage or system preference
+const saved = localStorage.getItem("theme");
+const preferLight = saved ? saved === "light" : window.matchMedia("(prefers-color-scheme: light)").matches;
+applyTheme(preferLight);
 
 /* ── Boot ───────────────────────────────────────────────────────── */
 init();
