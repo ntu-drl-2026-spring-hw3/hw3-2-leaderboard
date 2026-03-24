@@ -41,10 +41,12 @@ jobs:
             # results_json may contain special chars — write to file instead
             echo '${{ toJson(github.event.client_payload.results) }}' > /tmp/results.json
             echo "delete=${{ github.event.client_payload.delete || 'false' }}" >> $GITHUB_OUTPUT
+            echo "run_url=${{ github.event.client_payload.run_url }}" >> $GITHUB_OUTPUT
           else
             echo "student_id=${{ inputs.student_id }}" >> $GITHUB_OUTPUT
             echo '${{ inputs.results_json }}' > /tmp/results.json
             echo "delete=${{ inputs.delete }}" >> $GITHUB_OUTPUT
+            echo "run_url=" >> $GITHUB_OUTPUT
           fi
 
       - name: Set up Python
@@ -64,11 +66,7 @@ jobs:
       - name: Update score
         if: steps.vars.outputs.delete != 'true'
         run: |
-          AUDIT=$(jq -n \
-            --arg run_url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --arg triggered_by "${{ github.actor }}" \
-            --arg event_type "${{ github.event_name }}" \
-            '{run_url: $run_url, triggered_by: $triggered_by, event_type: $event_type}')
+          AUDIT=$(jq -n --arg run_url "${{ steps.vars.outputs.run_url }}" '{run_url: $run_url}')
           python scripts/update_score.py \
             --student-id "${{ steps.vars.outputs.student_id }}" \
             --results "$(cat /tmp/results.json)" \
