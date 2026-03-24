@@ -19,6 +19,7 @@ Payload:
 {
   "event_type": "submit_score",
   "client_payload": {
+    "secret": "<SUBMIT_SECRET>",
     "student_id": "r12345678",
     "results": {
       "SeekAndSlayLevel0-v0":  { "kills": 25, "health": 80.0, "ammo": 50 },
@@ -33,7 +34,7 @@ Payload:
 
 This triggers the `update_leaderboard` workflow → `scripts/update_score.py` → commits updated `leaderboard.json` → GitHub Pages auto-deploys.
 
-The `GITHUB_TOKEN` must have **`repo` scope**.
+The `GITHUB_TOKEN` must have **`repo` scope**. The `secret` field in the payload must match the `SUBMIT_SECRET` stored in the repo's Actions secrets, otherwise the workflow will reject the submission.
 
 ## Ranking & scoring
 
