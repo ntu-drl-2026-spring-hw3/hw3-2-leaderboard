@@ -79,6 +79,7 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: .6rem 1.4rem;
+      margin-top: 2rem;
       margin-bottom: 1.6rem;
       font-size: .75rem;
       color: var(--text-dim);
@@ -228,23 +229,6 @@
     .kill-count.no-data { color: var(--muted); }
     .kill-count.final   { color: var(--accent); }
 
-    .threshold-badge {
-      display: inline-block;
-      font-size: .6rem;
-      background: rgba(76, 175, 130, .15);
-      color: var(--green);
-      border: 1px solid rgba(76, 175, 130, .3);
-      border-radius: 99px;
-      padding: .05rem .35rem;
-      margin-left: .3rem;
-      vertical-align: middle;
-    }
-
-    .threshold-badge.fail {
-      background: rgba(224, 92, 92, .12);
-      color: var(--red);
-      border-color: rgba(224, 92, 92, .3);
-    }
 
     /* ─── Tooltip (JS-positioned, fixed) ───────────────────────── */
     .tooltip-anchor {
@@ -373,8 +357,7 @@
 </div>
 
 <div class="formula-card">
-  <strong>Score formula:</strong>&ensp;
-  <code>Total = &Sigma;(kills&nbsp;&times;&nbsp;w) + &Sigma;(health&nbsp;&times;&nbsp;0.05) + &Sigma;(ammo&nbsp;&times;&nbsp;0.01)</code>&ensp;&mdash;&ensp;
+  Ranked by levels reached, then <code>&Sigma; w &times; (kills&times;0.8 + health&times;0.1 + ammo&times;0.1)</code>&ensp;&mdash;&ensp;
   Weights: <code>L0 &times;1.0</code>&ensp;<code>L1 &times;1.5</code>&ensp;<code>L2 &times;2.0</code>&ensp;<code>L3 &times;2.5</code>&ensp;<code>L4 &times;3.0</code>
 </div>
 
@@ -400,11 +383,18 @@ function computeScore(levels) {
   for (const lvl of LEVELS) {
     const e = levels?.[lvl.name];
     if (!e) continue;
-    s += (e.kills  ?? 0) * lvl.weight;
-    s += (e.health ?? 0) * 0.05;
-    s += (e.ammo   ?? 0) * 0.01;
+    s += lvl.weight * ((e.kills ?? 0) * 0.8 + (e.health ?? 0) * 0.1 + (e.ammo ?? 0) * 0.1);
   }
   return Math.round(s * 100) / 100;
+}
+
+function levelsReached(levels) {
+  return LEVELS.filter(lvl => levels?.[lvl.name] != null).length;
+}
+
+// Composite rank key: primary = levels reached, secondary = formula score
+function rankVal(entry) {
+  return levelsReached(entry.levels) * 1e7 + (entry.total_score ?? 0);
 }
 
 /* ── State ─────────────────────────────────────────────────────── */
@@ -488,7 +478,7 @@ function buildHeader() {
 
 /* ── Sorting ────────────────────────────────────────────────────── */
 function getVal(e, key) {
-  if (key === "total_score")     return e.total_score ?? 0;
+  if (key === "total_score")     return rankVal(e);   // composite: levels reached first
   if (key === "student_id")      return e.student_id  ?? "";
   if (key === "submission_time") return e.submission_time ?? "";
   if (key.startsWith("lvl__"))   return e.levels?.[key.slice(5)]?.kills ?? -1;
@@ -513,8 +503,8 @@ function render() {
     return;
   }
 
-  // Rank by total_score (independent of current sort)
-  const byScore = [...DATA].sort((a, b) => (b.total_score ?? 0) - (a.total_score ?? 0));
+  // Rank by composite key: levels reached first, then formula score
+  const byScore = [...DATA].sort((a, b) => rankVal(b) - rankVal(a));
   const rankMap = Object.fromEntries(byScore.map((e, i) => [e.student_id, i + 1]));
 
   const rows = sorted().map(entry => {
@@ -536,15 +526,9 @@ function render() {
       const ammo   = ld.ammo   ?? 0;
       const contrib = Math.round((kills * lvl.weight + health * 0.05 + ammo * 0.01) * 100) / 100;
 
-      let klass = "final", badge = "";
+      let klass = "final";
       if (lvl.threshold != null) {
-        if (kills >= lvl.threshold) {
-          klass = "passed";
-          badge = `<span class="threshold-badge">&#10003; ${lvl.threshold}</span>`;
-        } else {
-          klass = "failed";
-          badge = `<span class="threshold-badge fail">&#10007; ${lvl.threshold}</span>`;
-        }
+        klass = kills >= lvl.threshold ? "passed" : "failed";
       }
 
       const tipHtml = [
@@ -558,7 +542,7 @@ function render() {
       return `
         <td class="level-cell">
           <span class="tooltip-anchor" data-tip="${tipHtml}">
-            <span class="kill-count ${klass}">${kills}</span>${badge}
+            <span class="kill-count ${klass}">${kills}</span>
           </span>
         </td>`;
     }).join("");
