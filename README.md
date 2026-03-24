@@ -19,7 +19,6 @@ Payload:
 {
   "event_type": "submit_score",
   "client_payload": {
-    "secret": "<SUBMIT_SECRET>",
     "student_id": "r12345678",
     "results": {
       "SeekAndSlayLevel0-v0":  { "kills": 25, "health": 80.0, "ammo": 50 },
@@ -27,6 +26,13 @@ Payload:
       "SeekAndSlayLevel2_1-v0":{ "kills": 12, "health": 45.0, "ammo": 20 },
       "SeekAndSlayLevel3_1-v0":{ "kills":  8, "health": 30.0, "ammo": 10 },
       "SeekAndSlayLevel4-v0":  { "kills":  5, "health": 20.0, "ammo":  5 }
+    },
+    "audit": {
+      "repository": "ntu-rl-2026-spring2-hw3/r12345678_repo",
+      "run_id":     "12345678901",
+      "run_url":    "https://github.com/ntu-rl-2026-spring2-hw3/r12345678_repo/actions/runs/12345678901",
+      "sha":        "abc123def456...",
+      "actor":      "r12345678"
     }
   }
 }
@@ -34,7 +40,7 @@ Payload:
 
 This triggers the `update_leaderboard` workflow → `scripts/update_score.py` → commits updated `leaderboard.json` → GitHub Pages auto-deploys.
 
-The `GITHUB_TOKEN` must have **`repo` scope**. The `secret` field in the payload must match the `SUBMIT_SECRET` stored in the repo's Actions secrets, otherwise the workflow will reject the submission.
+The `GITHUB_TOKEN` must have **`repo` scope**.
 
 ## Ranking & scoring
 
