@@ -403,7 +403,7 @@ function computeScore(levels) {
   for (const lvl of LEVELS) {
     const e = levels?.[lvl.name];
     if (!e) continue;
-    s += (e.kills ?? 0) * 0.8 + (e.health ?? 0) * 0.1 + (e.ammo ?? 0) * 0.1;
+    s += (e.kills ?? 0) * 1.0 + (e.health ?? 0) * 0.01 + (e.ammo ?? 0) * 0.005;
   }
   return Math.round(s * 100) / 100;
 }
@@ -541,7 +541,7 @@ function render() {
       const kills  = ld.kills  ?? 0;
       const health = ld.health ?? 0;
       const ammo   = ld.ammo   ?? 0;
-      const contrib = Math.round((kills * 0.8 + health * 0.1 + ammo * 0.1) * 100) / 100;
+      const contrib = Math.round((kills * 1.0 + health * 0.01 + ammo * 0.005) * 100) / 100;
 
       let klass = "final";
       if (lvl.threshold != null) {
