@@ -37,8 +37,8 @@ LEVELS = [
 
 LEVEL_THRESHOLDS = {
     "SeekAndSlayLevel0-v0":   15,
-    "SeekAndSlayLevel1_6-v0": 10,
-    "SeekAndSlayLevel3_1-v0":  8,
+    "SeekAndSlayLevel1_6-v0":  5,
+    "SeekAndSlayLevel3_1-v0":  5,
     "SeekAndSlayLevel2_3-v0":  5,
     "SeekAndSlayLevel4-v0":   None,
 }

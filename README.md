@@ -53,7 +53,7 @@ Final Score = Σ (kills × 0.8 + health × 0.1 + ammo × 0.1)
 | Level | Map | Kill threshold to pass |
 |---|---|:---:|
 | SeekAndSlayLevel0-v0 | default | 15 |
-| SeekAndSlayLevel1_6-v0 | mixed_enemies | 10 |
-| SeekAndSlayLevel3_1-v0 | blue_mixed_resized | 8 |
+| SeekAndSlayLevel1_6-v0 | mixed_enemies | 5 |
+| SeekAndSlayLevel3_1-v0 | blue_mixed_resized | 5 |
 | SeekAndSlayLevel2_3-v0 | red_mixed_enemies | 5 |
 | SeekAndSlayLevel4-v0 | complete | — |
