@@ -43,17 +43,26 @@ LEVEL_THRESHOLDS = {
     "SeekAndSlayLevel4-v0":   None,
 }
 
+# Difficulty-tier weights: L0 (easy) ×1, middle three ×2, L4 (final) ×3
+LEVEL_WEIGHTS = {
+    "SeekAndSlayLevel0-v0":   1,
+    "SeekAndSlayLevel1_6-v0": 2,
+    "SeekAndSlayLevel3_1-v0": 2,
+    "SeekAndSlayLevel2_3-v0": 2,
+    "SeekAndSlayLevel4-v0":   3,
+}
+
 def compute_score(levels: dict) -> float:
-    """Tiebreaker score: Σ (kills×1.0 + health×0.01 + ammo×0.005)
+    """Tiebreaker score: Σ weight × (kills×1.0 + health×0.01 + ammo×0.005)
     Primary ranking is by number of levels reached; this score breaks ties.
-    Health (0-100) and ammo (0-200) are weighted so each contributes at most
-    1 point per level, keeping kills as the dominant factor."""
+    Weights: L0 ×1, middle three ×2, L4 ×3."""
     score = 0.0
     for name in LEVELS:
         e = levels.get(name)
         if e is None:
             continue
-        score += (
+        w = LEVEL_WEIGHTS[name]
+        score += w * (
             e.get("kills", 0) * 1.0
             + e.get("health", 0) * 0.01
             + e.get("ammo", 0) * 0.005

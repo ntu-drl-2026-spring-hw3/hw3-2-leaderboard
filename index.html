@@ -384,11 +384,11 @@
 <script>
 /* ── Static config ─────────────────────────────────────────────── */
 const LEVELS = [
-  { name: "SeekAndSlayLevel0-v0",  map: "default",           threshold: 15 },
-  { name: "SeekAndSlayLevel1_6-v0",map: "mixed_enemies",     threshold: 5  },
-  { name: "SeekAndSlayLevel3_1-v0",map: "blue_mixed_resized",threshold: 5  },
-  { name: "SeekAndSlayLevel2_3-v0",map: "red_mixed_enemies", threshold: 5  },
-  { name: "SeekAndSlayLevel4-v0",  map: "complete",          threshold: null },
+  { name: "SeekAndSlayLevel0-v0",  map: "default",           threshold: 15,   weight: 1 },
+  { name: "SeekAndSlayLevel1_6-v0",map: "mixed_enemies",     threshold: 5,    weight: 2 },
+  { name: "SeekAndSlayLevel3_1-v0",map: "blue_mixed_resized",threshold: 5,    weight: 2 },
+  { name: "SeekAndSlayLevel2_3-v0",map: "red_mixed_enemies", threshold: 5,    weight: 2 },
+  { name: "SeekAndSlayLevel4-v0",  map: "complete",          threshold: null, weight: 3 },
 ];
 
 // Short display labels: L0, L1.6, L2.1, L3.1, L4
@@ -403,7 +403,8 @@ function computeScore(levels) {
   for (const lvl of LEVELS) {
     const e = levels?.[lvl.name];
     if (!e) continue;
-    s += (e.kills ?? 0) * 1.0 + (e.health ?? 0) * 0.01 + (e.ammo ?? 0) * 0.005;
+    const w = lvl.weight;
+    s += w * ((e.kills ?? 0) * 1.0 + (e.health ?? 0) * 0.01 + (e.ammo ?? 0) * 0.005);
   }
   return Math.round(s * 100) / 100;
 }
@@ -541,7 +542,7 @@ function render() {
       const kills  = ld.kills  ?? 0;
       const health = ld.health ?? 0;
       const ammo   = ld.ammo   ?? 0;
-      const contrib = Math.round((kills * 1.0 + health * 0.01 + ammo * 0.005) * 100) / 100;
+      const contrib = Math.round(lvl.weight * (kills * 1.0 + health * 0.01 + ammo * 0.005) * 100) / 100;
 
       let klass = "final";
       if (lvl.threshold != null) {
