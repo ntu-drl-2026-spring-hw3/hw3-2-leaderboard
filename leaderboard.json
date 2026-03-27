@@ -32,5 +32,19 @@
     "audit": {
       "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw2-3-baseline/actions/runs/23639113570"
     }
+  },
+  {
+    "student_id": "r00000001",
+    "submission_time": "2026-03-27T14:18:42.730926+00:00",
+    "levels": {
+      "SeekAndSlayLevel0-v0": {
+        "ammo": 68.8,
+        "health": 93.6,
+        "kills": 2
+      }
+    },
+    "audit": {
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-torrid-fish/actions/runs/23650548048"
+    }
   }
 ]
