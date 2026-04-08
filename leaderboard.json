@@ -348,5 +348,34 @@
     "audit": {
       "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-chungcy312/actions/runs/24130151425"
     }
+  },
+  {
+    "student_id": "b11801004",
+    "submission_time": "2026-04-08T12:56:58.242315+00:00",
+    "levels": {
+      "SeekAndSlayLevel0-v0": {
+        "ammo": 84,
+        "health": 100,
+        "kills": 26
+      },
+      "SeekAndSlayLevel1_6-v0": {
+        "ammo": 81,
+        "health": 22,
+        "kills": 15
+      },
+      "SeekAndSlayLevel2_3-v0": {
+        "ammo": 85,
+        "health": 25,
+        "kills": 8
+      },
+      "SeekAndSlayLevel3_1-v0": {
+        "ammo": 83,
+        "health": 7,
+        "kills": 13
+      }
+    },
+    "audit": {
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-william25885/actions/runs/24097609529"
+    }
   }
 ]
