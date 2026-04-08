@@ -227,5 +227,24 @@
     "audit": {
       "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-torrid-fish/actions/runs/24121193267"
     }
+  },
+  {
+    "student_id": "b12508026",
+    "submission_time": "2026-04-08T06:36:36.496766+00:00",
+    "levels": {
+      "SeekAndSlayLevel0-v0": {
+        "ammo": 71,
+        "health": 100,
+        "kills": 25
+      },
+      "SeekAndSlayLevel1_6-v0": {
+        "ammo": 60,
+        "health": 7,
+        "kills": 8
+      }
+    },
+    "audit": {
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-W-X-Dai/actions/runs/24118423500"
+    }
   }
 ]
