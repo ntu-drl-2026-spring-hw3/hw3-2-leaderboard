@@ -65,3 +65,44 @@ Health (0–100) and ammo (0–200) each contribute at most 1 point per level be
 | SeekAndSlayLevel3_1-v0 | blue_mixed_resized | 9 |
 | SeekAndSlayLevel2_3-v0 | red_mixed_enemies | 9 |
 | SeekAndSlayLevel4-v0 | complete | — |
+
+## Admin: re-judging all submissions
+
+When `judge.py` in `hw3-2-judge-workflow` is updated, you can re-evaluate every
+existing submission **without asking students to re-commit**. Each student's
+workflow checks out the judge from `main` at run time, so re-running their last
+GitHub Actions run will pick up the new judge automatically.
+
+The flow:
+
+1. Push the new `judge.py` to `hw3-2-judge-workflow` `main`.
+2. Pull this repo and back up + clear `leaderboard.json` (Baselines are kept):
+   ```bash
+   git pull
+   python scripts/clear_leaderboard.py
+   git add leaderboard.json
+   git commit -m "leaderboard: clear for re-judge"
+   git push
+   ```
+   `clear_leaderboard.py` writes a timestamped backup to `backup/` (gitignored)
+   and prints the exact command to run next.
+3. Wait until the `Update Leaderboard` workflow is idle in the Actions tab.
+4. Trigger re-runs of every student's last judge run:
+   ```bash
+   python scripts/rerun_all.py --from backup/leaderboard.<timestamp>.json --dry-run
+   python scripts/rerun_all.py --from backup/leaderboard.<timestamp>.json
+   ```
+   The script reads the student list and `audit.run_url` from the backup file
+   and calls `gh run rerun` against each student's repo. Entries whose
+   `student_id` starts with `Baseline` are skipped. Requires `gh` authenticated
+   as an org admin.
+5. Each re-run dispatches `submit_score` back here. The `Update Leaderboard`
+   workflow has a top-level `concurrency: { group: leaderboard-writer,
+   cancel-in-progress: false }` so the 15+ writers serialize on a single
+   queue — no `git push` races, no dropped submissions.
+
+To re-judge a single student instead of everyone:
+
+```bash
+python scripts/rerun_all.py --only b12508026
+```
