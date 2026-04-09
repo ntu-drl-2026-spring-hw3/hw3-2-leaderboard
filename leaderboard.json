@@ -667,5 +667,19 @@
     "audit": {
       "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-hejijun-ho/actions/runs/24186629992"
     }
+  },
+  {
+    "student_id": "b12902046",
+    "submission_time": "2026-04-09T11:40:32.572226+00:00",
+    "levels": {
+      "SeekAndSlayLevel0-v0": {
+        "ammo": 69,
+        "health": 90.4,
+        "kills": 3.6
+      }
+    },
+    "audit": {
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-pp1457-2/actions/runs/24188213819"
+    }
   }
 ]
