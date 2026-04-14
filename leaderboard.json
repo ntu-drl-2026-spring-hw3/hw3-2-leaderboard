@@ -1156,16 +1156,16 @@
   },
   {
     "student_id": "b12902131",
-    "submission_time": "2026-04-14T03:37:41.799275+00:00",
+    "submission_time": "2026-04-14T03:38:41.701990+00:00",
     "levels": {
       "SeekAndSlayLevel0-v0": {
-        "ammo": 59,
+        "ammo": 65,
         "health": 100,
-        "kills": 29
+        "kills": 33
       },
       "SeekAndSlayLevel1_6-v0": {
-        "ammo": 70,
-        "health": 6,
+        "ammo": 63,
+        "health": 64,
         "kills": 17
       },
       "SeekAndSlayLevel2_3-v0": {
@@ -1185,7 +1185,7 @@
       }
     },
     "audit": {
-      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-sinkboy-chen/actions/runs/24379573419"
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-sinkboy-chen/actions/runs/24379592326"
     }
   },
   {
