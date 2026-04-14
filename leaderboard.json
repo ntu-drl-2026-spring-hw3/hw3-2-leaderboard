@@ -1542,31 +1542,36 @@
   },
   {
     "student_id": "b11201048",
-    "submission_time": "2026-04-14T09:03:01.796164+00:00",
+    "submission_time": "2026-04-14T09:21:21.734850+00:00",
     "levels": {
       "SeekAndSlayLevel0-v0": {
-        "ammo": 115,
+        "ammo": 112,
         "health": 100,
-        "kills": 23
+        "kills": 26
       },
       "SeekAndSlayLevel1_6-v0": {
-        "ammo": 117,
-        "health": 49,
-        "kills": 16
+        "ammo": 113,
+        "health": 40,
+        "kills": 10
       },
       "SeekAndSlayLevel2_3-v0": {
-        "ammo": 134,
-        "health": 7,
-        "kills": 5
+        "ammo": 111,
+        "health": 52,
+        "kills": 10
       },
       "SeekAndSlayLevel3_1-v0": {
         "ammo": 117,
-        "health": 47,
-        "kills": 15
+        "health": 28,
+        "kills": 14
+      },
+      "SeekAndSlayLevel4-v0": {
+        "ammo": 165,
+        "health": 5,
+        "kills": 6
       }
     },
     "audit": {
-      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-Chi-Lei-Tsai/actions/runs/24273947131"
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-Chi-Lei-Tsai/actions/runs/24391145547"
     }
   }
 ]
