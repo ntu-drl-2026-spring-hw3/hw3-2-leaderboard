@@ -1665,5 +1665,19 @@
     "audit": {
       "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-Ekstaxy/actions/runs/24441176030"
     }
+  },
+  {
+    "student_id": "b12705055",
+    "submission_time": "2026-04-15T13:31:02.973906+00:00",
+    "levels": {
+      "SeekAndSlayLevel0-v0": {
+        "ammo": 129,
+        "health": 100,
+        "kills": 15
+      }
+    },
+    "audit": {
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-nonoivan1234/actions/runs/24457346218"
+    }
   }
 ]
