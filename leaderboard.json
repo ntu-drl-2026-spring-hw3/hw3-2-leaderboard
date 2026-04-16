@@ -576,36 +576,36 @@
   },
   {
     "student_id": "b10608054",
-    "submission_time": "2026-04-14T17:49:48.458624+00:00",
+    "submission_time": "2026-04-16T12:59:11.181040+00:00",
     "levels": {
       "SeekAndSlayLevel0-v0": {
-        "ammo": 112,
+        "ammo": 113,
         "health": 100,
-        "kills": 26
+        "kills": 28
       },
       "SeekAndSlayLevel1_6-v0": {
-        "ammo": 112,
-        "health": 21,
-        "kills": 18
+        "ammo": 115,
+        "health": 2,
+        "kills": 19
       },
       "SeekAndSlayLevel2_3-v0": {
-        "ammo": 111,
-        "health": 49,
-        "kills": 16
-      },
-      "SeekAndSlayLevel3_1-v0": {
-        "ammo": 112,
-        "health": 25,
+        "ammo": 114,
+        "health": 46,
         "kills": 17
       },
-      "SeekAndSlayLevel4-v0": {
-        "ammo": 171,
+      "SeekAndSlayLevel3_1-v0": {
+        "ammo": 114,
         "health": 67,
-        "kills": 9
+        "kills": 11
+      },
+      "SeekAndSlayLevel4-v0": {
+        "ammo": 154,
+        "health": 6,
+        "kills": 16
       }
     },
     "audit": {
-      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-jfn-git/actions/runs/24414296501"
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-jfn-git/actions/runs/24511512202"
     }
   },
   {
