@@ -2471,5 +2471,19 @@
     "audit": {
       "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-samysheesh-1/actions/runs/24620999613"
     }
+  },
+  {
+    "student_id": "b12902147",
+    "submission_time": "2026-04-19T04:37:54.544379+00:00",
+    "levels": {
+      "SeekAndSlayLevel0-v0": {
+        "ammo": 121,
+        "health": 100,
+        "kills": 17
+      }
+    },
+    "audit": {
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-Kaiweiyan/actions/runs/24621074067"
+    }
   }
 ]
