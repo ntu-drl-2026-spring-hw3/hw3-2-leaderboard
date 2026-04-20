@@ -2768,5 +2768,24 @@
     "audit": {
       "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-VerstandTsai/actions/runs/24652859830"
     }
+  },
+  {
+    "student_id": "b12902145",
+    "submission_time": "2026-04-20T07:00:37.665038+00:00",
+    "levels": {
+      "SeekAndSlayLevel0-v0": {
+        "ammo": 122,
+        "health": 100,
+        "kills": 31
+      },
+      "SeekAndSlayLevel1_6-v0": {
+        "ammo": 130,
+        "health": 43,
+        "kills": 8
+      }
+    },
+    "audit": {
+      "run_url": "https://github.com/ntu-drl-2026-spring-hw3/hw3-2-chh-529/actions/runs/24652937836"
+    }
   }
 ]
